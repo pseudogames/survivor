@@ -88,7 +88,7 @@ void resetApp(App *app)
 	p1body->life = 100.0;
 	p1body->item.type = &app->game.itemtype[ITEM_PLAYER_BULLET];
 	p1body->item.ammo_used = 0 ;
-	p1body->shoot_key = SDLK_a;
+	p1body->shoot_key = SDLK_LSHIFT;
 	p1body->last_ai = 0;
 
 	/**
@@ -102,7 +102,7 @@ void resetApp(App *app)
 	p2body->life = 100.0;
 	p2body->item.type = &app->game.itemtype[ITEM_PLAYER_BULLET];
 	p2body->item.ammo_used = 0 ;
-	p2body->shoot_key = SDLK_z;
+	p2body->shoot_key = SDLK_RSHIFT;
 	p2body->last_ai = 0;
 
 	setWave(app,0); // calls gameInit
@@ -129,23 +129,24 @@ void bindGameplayKeysDown(App *app, SDLKey *key){
 			pauseOrJoinTheGame(app, player1);
 			break;
 		case SDLK_2:
+		case SDLK_0:
 			pauseOrJoinTheGame(app, player2);
 			break;
-		case SDLK_9:
+		case SDLK_F5:
 			setWave(app, (app->game.board.wave_count + app->game.board.wave_index + (mod & KMOD_SHIFT ? -1 : 1)) % app->game.board.wave_count);
 			break;
-		case SDLK_0:
+		case SDLK_F4:
 			app->debug = (DEBUG_COUNT + app->debug + (mod & KMOD_SHIFT ? -1 : 1)) % DEBUG_COUNT;
 			break;
 		case SDLK_ESCAPE:
 			app->state = STATE_PAUSED;
 			app->menu.selected = MENU_RESUME;
 			break;
-		case SDLK_s:
+		case SDLK_LCTRL:
 			grab(app, &player1->body);
 			break;
-		case SDLK_x:
-		case SDLK_KP_MINUS:
+		case SDLK_RCTRL:
+		case SDLK_RETURN:
 			give(app, &player1->body, &player2->body);
 			
 			if(grab(app, &player2->body)
@@ -173,27 +174,26 @@ void bindMenuKeysDown(App *app, SDLKey *key){
 
   switch(*key){
 	case SDLK_UP:
-	case SDLK_q:
-	case SDLK_t:
+	case SDLK_w:
 	  if(menu->selected != firstMenu){
 		menu->selected--;
 	  }
 	  break;
 	case SDLK_DOWN:
-	case SDLK_w:
-	case SDLK_y:
+	case SDLK_s:
 	  if(menu->selected < MENU_COUNT - 1){
 		menu->selected++;
 	  }
 	  break;
 	case SDLK_1:
 	case SDLK_2:
+	case SDLK_0:
 	  if(player2->body.status != BODY_ALIVE &&
 		  player1->body.status != BODY_ALIVE) {
 		  resetApp(app);
 	  }
 	  app->state = STATE_PLAYING;
-	  if(*key == SDLK_2){
+	  if(*key != SDLK_1){
 		  player2->body.status = BODY_ALIVE;
 		  player2->body.life = 100;
 		  player_spawn_pos(&app->game, &player2->body.pos.x, &player2->body.pos.y);
@@ -203,9 +203,12 @@ void bindMenuKeysDown(App *app, SDLKey *key){
 		  player_spawn_pos(&app->game, &player1->body.pos.x, &player1->body.pos.y);
 	  }
 	  break;
-	case SDLK_a:
-	case SDLK_z:
+	case SDLK_LSHIFT:
+	case SDLK_RSHIFT:
+	case SDLK_LCTRL:
+	case SDLK_RCTRL:
 	case SDLK_RETURN:
+	case SDLK_SPACE:
 	  if(app->state == STATE_CREDITS){
 		if(app->credits == CREDITS_SOUND){
 		  app->state = app->stateBeforeCredits;
@@ -228,7 +231,7 @@ void bindMenuKeysDown(App *app, SDLKey *key){
 	  } else if(menu->selected == MENU_RESUME){
 		app->state = STATE_PLAYING;
 	  }
-	  if(*key == SDLK_z){
+	  if(*key == SDLK_RSHIFT){
 		player2->body.status = BODY_ALIVE;
 		player2->body.life = 100;
 		player_spawn_pos(&app->game, &player2->body.pos.x, &player2->body.pos.y);
@@ -263,11 +266,11 @@ void bindGameplayKeystate(App *app){
    * */
 
   player_move(app, &player1->body,
-	  keystate[SDLK_UP] || keystate[SDLK_q],
-	  keystate[SDLK_RIGHT] || keystate[SDLK_r],
-	  keystate[SDLK_DOWN] || keystate[SDLK_w],
-	  keystate[SDLK_LEFT] || keystate[SDLK_e],
-	  keystate[SDLK_s]
+	  keystate[SDLK_w],
+	  keystate[SDLK_d],
+	  keystate[SDLK_s],
+	  keystate[SDLK_a],
+	  keystate[SDLK_LCTRL]
 	  );
 
   /**
@@ -277,16 +280,16 @@ void bindGameplayKeystate(App *app){
    * S = SECONDARY ATTACK
    * */
   player_move(app, &player2->body,
-	  keystate[SDLK_p]         || keystate[SDLK_KP8] || keystate[SDLK_t],
-	  keystate[SDLK_QUOTE]     || keystate[SDLK_KP6] || keystate[SDLK_i],
-	  keystate[SDLK_SEMICOLON] ||keystate[SDLK_KP5] || keystate[SDLK_y],
-	  keystate[SDLK_l]         ||keystate[SDLK_KP4] || keystate[SDLK_KP2] || keystate[SDLK_u],
-	  keystate[SDLK_x]
+	  keystate[SDLK_UP],
+	  keystate[SDLK_RIGHT],
+	  keystate[SDLK_DOWN],
+	  keystate[SDLK_LEFT],
+	  keystate[SDLK_RCTRL] || keystate[SDLK_RETURN]
 	  );
 
-  if(keystate[SDLK_a])
+  if(keystate[SDLK_LSHIFT])
 	shoot(app, &player1->body);
-  if(keystate[SDLK_z] || keystate[SDLK_KP_PLUS] ) {
+  if(keystate[SDLK_RSHIFT] ) {
 	if(player2->body.item.type->build) {
 		build(app, &player2->body);
 	} else {
