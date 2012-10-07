@@ -326,6 +326,7 @@ void renderInit(App *app){
   app->logo = IMG_Load("data/logo.png");
   app->menu.soldier = IMG_Load("data/soldado1_grande.png");
   app->menu.bigZombie = IMG_Load("data/zombie2_grande.png");
+  app->menu.keyBinds = IMG_Load("data/keyboard-layout.png");
   app->menu.zombie = IMG_Load("data/zombie1.png");
   app->menu.engineer = IMG_Load("data/engenheiro1.png");
   app->game.player1.up = IMG_Load("data/soldado1_costas.png");
@@ -348,6 +349,7 @@ void renderTerminate(App *app){
 	SDL_FreeSurface(app->logo);
 	SDL_FreeSurface(app->menu.soldier);
 	SDL_FreeSurface(app->menu.bigZombie);
+	SDL_FreeSurface(app->menu.keyBinds);
 	SDL_FreeSurface(app->menu.zombie);
 	SDL_FreeSurface(app->menu.engineer);
 	SDL_FreeSurface(app->game.player1.up);
@@ -370,7 +372,6 @@ void renderMenu(App *app){
 	SDL_FillRect(app->screen, NULL , color);
 	Menu *menu = &app->menu;
 	SDL_Surface *screen = app->screen;
-
 
 	SDL_Rect logoPos = {-450, -650, screen->w, screen->h};
 	SDL_BlitSurface(app->logo, &logoPos, screen, NULL);
@@ -411,8 +412,23 @@ void renderMenu(App *app){
     text_write_raw(screen, 300, 50, "Survivor", red, 96);
 
 	text_write(screen, 100, 250 + resumePadding, "new game", menu->selected == MENU_NEW_GAME);
+	text_write(screen, 100, 350 + resumePadding, "help", menu->selected == MENU_HELP);
 	text_write(screen, 100, 450 + resumePadding, "credits", menu->selected == MENU_CREDITS);
 	text_write(screen, 100, 550 + resumePadding, "exit", menu->selected == MENU_QUIT);
+
+  SDL_UpdateRect(app->screen, 0, 0, 0, 0);
+}
+
+void renderHelp(App *app)
+{
+	Uint32 color = SDL_MapRGB(app->screen->format, 33, 33,33 );
+	SDL_Surface *screen = app->screen;
+	SDL_FillRect(screen, NULL , color);
+
+	SDL_Rect keyBindRect = {150, 100, screen->w, screen->h};
+	SDL_BlitSurface(app->menu.keyBinds, NULL, screen, &keyBindRect);
+
+	text_write_raw(screen, 300, 50, "Help", red, 96);
 
   SDL_UpdateRect(app->screen, 0, 0, 0, 0);
 }

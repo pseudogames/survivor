@@ -143,10 +143,12 @@ void bindGameplayKeysDown(App *app, SDLKey *key){
 			app->menu.selected = MENU_RESUME;
 			break;
 		case SDLK_LCTRL:
+		case SDLK_LALT:
 			grab(app, &player1->body);
 			break;
 		case SDLK_RCTRL:
 		case SDLK_RETURN:
+		case SDLK_RALT:
 			give(app, &player1->body, &player2->body);
 			
 			if(grab(app, &player2->body)
@@ -207,8 +209,15 @@ void bindMenuKeysDown(App *app, SDLKey *key){
 	case SDLK_RSHIFT:
 	case SDLK_LCTRL:
 	case SDLK_RCTRL:
+	case SDLK_LALT:
+	case SDLK_RALT:
 	case SDLK_RETURN:
 	case SDLK_SPACE:
+	  if(app->state == STATE_HELP){
+		  app->state = app->stateBeforeCredits;
+		  break;
+	  }
+
 	  if(app->state == STATE_CREDITS){
 		if(app->credits == CREDITS_SOUND){
 		  app->state = app->stateBeforeCredits;
@@ -228,6 +237,10 @@ void bindMenuKeysDown(App *app, SDLKey *key){
 		AppState s = app->state;
 		app->stateBeforeCredits = s;
 		app->state = STATE_CREDITS;
+	  } else if(menu->selected == MENU_HELP){
+		AppState s = app->state;
+		app->stateBeforeCredits = s;
+		app->state = STATE_HELP;
 	  } else if(menu->selected == MENU_RESUME){
 		app->state = STATE_PLAYING;
 	  }
@@ -270,7 +283,7 @@ void bindGameplayKeystate(App *app){
 	  keystate[SDLK_d],
 	  keystate[SDLK_s],
 	  keystate[SDLK_a],
-	  keystate[SDLK_LCTRL]
+	  keystate[SDLK_LCTRL] || keystate[SDLK_LALT]
 	  );
 
   /**
@@ -284,7 +297,7 @@ void bindGameplayKeystate(App *app){
 	  keystate[SDLK_RIGHT],
 	  keystate[SDLK_DOWN],
 	  keystate[SDLK_LEFT],
-	  keystate[SDLK_RCTRL] || keystate[SDLK_RETURN]
+	  keystate[SDLK_RCTRL] || keystate[SDLK_RALT] || keystate[SDLK_RETURN]
 	  );
 
   if(keystate[SDLK_LSHIFT])
@@ -640,10 +653,10 @@ void loadMap(App *app) {
   app->game.board.wave[16].enemy_count=230;
   app->game.board.wave[16].enemy_count_on_screen=90;
   app->game.board.wave[16].enemy_count_per_spawn=30;
-  app->game.board.wave[16].enemy_chance[ENEMY_MEDIC]=10;
-  app->game.board.wave[16].enemy_chance[ENEMY_SOLDIER]=20;
+  app->game.board.wave[16].enemy_chance[ENEMY_MEDIC]=20;
+  app->game.board.wave[16].enemy_chance[ENEMY_SOLDIER]=15;
   app->game.board.wave[16].enemy_chance[ENEMY_FASTER]=10;
-  app->game.board.wave[16].enemy_chance[ENEMY_SUICIDAL]=12;
+  app->game.board.wave[16].enemy_chance[ENEMY_SUICIDAL]=2;
 
   app->game.board.wave[17].x=bx*4;
   app->game.board.wave[17].y=by*1;
@@ -1394,6 +1407,8 @@ int main(int argc, char* args[] )
   renderInit(&app);
   SDL_WM_SetCaption("survivor - pseudogames", "survivor");
   SDL_ShowCursor(0);
+  app.icon = IMG_Load("data/icon.png");
+  SDL_WM_SetIcon(app.icon, NULL);
 
   soundInit();
   loadItems(&app);
@@ -1418,6 +1433,8 @@ int main(int argc, char* args[] )
 	  move_enemies(&app);
 	  renderFinish(&app);
 	  checkGameover(&app);
+	} else if (app.state == STATE_HELP) {
+	  renderHelp(&app);
 	} else if (app.state == STATE_CREDITS) {
 	  renderCredits(&app);
 	} else {
@@ -1456,6 +1473,7 @@ int main(int argc, char* args[] )
   SDL_FreeSurface(app.game.enemy_class[ENEMY_SOLDIER].image);
   SDL_FreeSurface(app.game.board.image);
   SDL_FreeSurface(app.game.board.hit);
+  SDL_FreeSurface(app.icon);
   renderTerminate(&app);
   terminate_font();
   sound_terminate();

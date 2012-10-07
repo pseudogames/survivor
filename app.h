@@ -37,6 +37,7 @@ enum {
 typedef enum {
   MENU_RESUME = 0,
   MENU_NEW_GAME,
+  MENU_HELP,
   MENU_CREDITS,
   MENU_QUIT,
   MENU_COUNT
@@ -48,6 +49,7 @@ typedef struct {
   SDL_Surface *zombie;
   SDL_Surface *engineer;
   SDL_Surface *bigZombie;
+  SDL_Surface *keyBinds;
 } Menu;
 
 typedef enum {
@@ -199,6 +201,7 @@ typedef enum {
   STATE_PAUSED,
   STATE_PLAYING,
   STATE_GAMEOVER,
+  STATE_HELP,
   STATE_CREDITS,
   STATE_EXIT,
 } AppState;
@@ -236,6 +239,7 @@ typedef struct {
    */
   AppState stateBeforeCredits;
   SDL_Surface *logo;
+  SDL_Surface *icon;
   Menu menu;
 } App;
 
