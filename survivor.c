@@ -132,10 +132,10 @@ void bindGameplayKeysDown(App *app, SDLKey *key){
 		case SDLK_0:
 			pauseOrJoinTheGame(app, player2);
 			break;
-		case SDLK_F5:
+		case SDLK_6:
 			setWave(app, (app->game.board.wave_count + app->game.board.wave_index + (mod & KMOD_SHIFT ? -1 : 1)) % app->game.board.wave_count);
 			break;
-		case SDLK_F4:
+		case SDLK_5:
 			app->debug = (DEBUG_COUNT + app->debug + (mod & KMOD_SHIFT ? -1 : 1)) % DEBUG_COUNT;
 			break;
 		case SDLK_ESCAPE:
