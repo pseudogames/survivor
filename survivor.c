@@ -89,6 +89,7 @@ void resetApp(App *app)
 	p1body->item.type = &app->game.itemtype[ITEM_PLAYER_BULLET];
 	p1body->item.ammo_used = 0 ;
 	p1body->shoot_key = SDLK_LSHIFT;
+	p1body->shoot_key2 = SDLK_LALT;
 	p1body->last_ai = 0;
 
 	/**
@@ -103,6 +104,7 @@ void resetApp(App *app)
 	p2body->item.type = &app->game.itemtype[ITEM_PLAYER_BULLET];
 	p2body->item.ammo_used = 0 ;
 	p2body->shoot_key = SDLK_RSHIFT;
+	p2body->shoot_key2 = SDLK_RALT;
 	p2body->last_ai = 0;
 
 	setWave(app,0); // calls gameInit
@@ -244,7 +246,7 @@ void bindMenuKeysDown(App *app, SDLKey *key){
 	  } else if(menu->selected == MENU_RESUME){
 		app->state = STATE_PLAYING;
 	  }
-	  if(*key == SDLK_RSHIFT){
+	  if(*key == SDLK_RSHIFT || *key == SDLK_RALT){
 		player2->body.status = BODY_ALIVE;
 		player2->body.life = 100;
 		player_spawn_pos(&app->game, &player2->body.pos.x, &player2->body.pos.y);
@@ -300,9 +302,9 @@ void bindGameplayKeystate(App *app){
 	  keystate[SDLK_RCTRL] || keystate[SDLK_RALT] || keystate[SDLK_RETURN]
 	  );
 
-  if(keystate[SDLK_LSHIFT])
+  if(keystate[SDLK_LSHIFT] || keystate[SDLK_LALT])
 	shoot(app, &player1->body);
-  if(keystate[SDLK_RSHIFT] ) {
+  if(keystate[SDLK_RSHIFT] || keystate[SDLK_RALT] ) {
 	if(player2->body.item.type->build) {
 		build(app, &player2->body);
 	} else {
@@ -1103,7 +1105,7 @@ int aim(App *app, Body *body)
 {
   Uint8 *keystate;
   keystate = SDL_GetKeyState(NULL);
-  if(keystate[body->shoot_key] ) return;
+  if(keystate[body->shoot_key] || keystate[body->shoot_key2] ) return;
 	int x1, y1, x2, y2;
 	int dx, dy, i, e;
 	int incx, incy, inc1, inc2;

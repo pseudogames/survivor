@@ -91,6 +91,7 @@ typedef struct {
   float ang_vel;
   float angle; // degree
   int shoot_key; // OH GOD WHY!
+  int shoot_key2; // OH GOD WHY!
   Mix_Chunk *onHitSound;
   int last_ai; // enemy=last pathfind; player=last time was reached
   int exploded;
